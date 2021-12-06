@@ -9,6 +9,7 @@ module Ruboty
       def initialize(websocket_url:)
         @queue = Queue.new
         @client = create_client(websocket_url.to_s)
+        puts "websocket_url: #{websocket_url}"
       end
 
       def send_message(data)
@@ -38,8 +39,10 @@ module Ruboty
         loop do
           message = @queue.deq
           if message.equal?(CONNECTION_CLOSED)
+            puts 'connection closed.'
             break
           end
+          puts "send message #{message}"
           @client.send(message)
         end
       end

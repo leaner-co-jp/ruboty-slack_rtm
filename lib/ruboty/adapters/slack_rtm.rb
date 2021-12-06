@@ -16,8 +16,11 @@ module Ruboty
       env :SLACK_AUTO_RECONNECT, "Enable auto reconnect", optional: true
 
       def run
+        puts 'initialize...'
         init
+        puts 'binding...'
         bind
+        puts 'connecting...'
         connect
       end
 
@@ -87,13 +90,20 @@ module Ruboty
       def bind
         realtime.on_text do |data|
           method_name = "on_#{data['type']}".to_sym
-          send(method_name, data) if respond_to?(method_name, true)
+          if respond_to?(method_name, true)
+            puts "send method #{method_name}"
+            send(method_name, data)
+          else
+            puts "skip unknown method #{method_name}"
+          end
+
         end
       end
 
       def connect
         Thread.start do
           loop do
+            puts 'connection loop started'
             sleep 5
             set_active
           end
@@ -135,6 +145,7 @@ module Ruboty
       end
 
       def set_active
+        puts 'activated.'
         client.users_setActive
       end
 
